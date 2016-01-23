@@ -1,0 +1,3 @@
+GET /:user  @pl.jozwik.demo.view.controller.CommentController.posts(user:String)
+
+POST / @pl.jozwik.demo.view.controller.CommentController.writePost()
