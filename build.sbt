@@ -76,7 +76,9 @@ lazy val view = projectName("view", file("presentation/view")).settings(
     `org.scalatestplus_play`
   ),
   packAutoSettings,
-  packMain := Map("view" -> "play.core.server.ProdServerStart")
+  packMain := Map("view" -> "play.core.server.ProdServerStart"),
+  Revolver.settings,
+  mainClass in reStart := Option("play.core.server.ProdServerStart")
 ).dependsOn(storage).enablePlugins(SbtWeb)
   .enablePlugins(PlayScala)
   .disablePlugins(PlayLayoutPlugin)

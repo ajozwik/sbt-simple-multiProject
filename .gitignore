@@ -2,4 +2,6 @@
 *.log
 *~
 target
+logs
+RUNNING_PID
 

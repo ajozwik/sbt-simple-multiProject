@@ -18,9 +18,14 @@ sbt scapegoat
 
 For presentation layer [playframework](https://www.playframework.com/) is used.
 
-Run project by:
+Run project by playframework command:
 ```
 sbt ~view/run
+```
+
+or sbt-revolver
+```
+sbt ~view/reStart
 ```
 
 Alternative package project with playframework dist command:
