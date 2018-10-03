@@ -1,3 +1,8 @@
-GET /:user  @pl.jozwik.demo.view.controller.CommentController.posts(user:String)
+GET         /:user                      @pl.jozwik.demo.view.controller.CommentController.posts(user:String)
 
-POST / @pl.jozwik.demo.view.controller.CommentController.writePost()
+POST        /                           @pl.jozwik.demo.view.controller.CommentController.writePost()
+
+
+GET           /                         controllers.Default.notFound
+
+GET           /*file                     controllers.Assets.at(path="/public",file)

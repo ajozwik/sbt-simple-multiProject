@@ -1,6 +1,6 @@
 package pl.jozwik.demo.storage
 
-import pl.jozwik.demo.domain.{Post, PostRepository}
+import pl.jozwik.demo.domain.{ Post, PostRepository }
 import javax.inject.Singleton
 
 @Singleton

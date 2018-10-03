@@ -1,19 +1,13 @@
 import com.sksamuel.scapegoat.sbt.ScapegoatSbtPlugin.autoImport._
-import com.typesafe.sbt.SbtScalariform
-import com.typesafe.sbt.SbtScalariform.ScalariformKeys
-import com.typesafe.sbt.SbtScalariform.autoImport._
+import scalariform.formatter.preferences._
 
-import scalariform.formatter.preferences.AlignSingleLineCaseStatements
-import scalariform.formatter.preferences.SpacesAroundMultiImports
+scalaVersion in ThisBuild := "2.12.7"
 
-scalaVersion in Global := "2.11.7"
-
-organization in Global := "pl.jozwik.demo"
+organization in ThisBuild := "pl.jozwik.demo"
 
 name := "sbt-simple-multiProject"
 
-version in Global := "1.0.0"
-
+scapegoatVersion in ThisBuild := "1.3.8"
 
 scalacOptions in ThisBuild ++= Seq(
   "-target:jvm-1.8",
@@ -27,35 +21,39 @@ scalacOptions in ThisBuild ++= Seq(
   "-Ywarn-inaccessible",
   "-Ywarn-dead-code",
   "-language:reflectiveCalls",
-  "-Ybackend:GenBCode",
   "-Ydelambdafy:method"
 )
 
 val readPlayVersion = {
   val lineIterator = scala.io.Source.fromFile(new java.io.File("project", "play.sbt")).getLines()
-  val line = lineIterator.find(line => line.contains("playVersion")).getOrElse( """val playVersion = "2.4.6" """)
+  val line = lineIterator.find(line => line.contains("playVersion")).getOrElse( """val playVersion = "2.6.19" """)
   val versionString = line.split("=")(1).trim
   versionString.replace("\"", "")
 }
 
-val `org.scalatest_scalatest` = "org.scalatest" %% "scalatest" % "2.2.6" % "test"
+val circeVersion = "0.9.0"
 
-val `org.scalacheck_scalacheck` = "org.scalacheck" %% "scalacheck" % "1.12.5" % "test"
+val `org.scalatest_scalatest` = "org.scalatest" %% "scalatest" % "3.0.5"
 
-val `com.typesafe.scala-logging_scala-logging` = "com.typesafe.scala-logging" %% "scala-logging" % "3.1.0"
+val `org.scalacheck_scalacheck` = "org.scalacheck" %% "scalacheck" % "1.14.0"
 
-val `ch.qos.logback_logback-classic` = "ch.qos.logback" % "logback-classic" % "1.1.3"
+val `com.typesafe.scala-logging_scala-logging` = "com.typesafe.scala-logging" %% "scala-logging" % "3.9.0"
 
-val `org.scalatestplus_play` = "org.scalatestplus" %% "play" % "1.4.0" % "test"
+val `ch.qos.logback_logback-classic` = "ch.qos.logback" % "logback-classic" % "1.2.3"
 
-val `net.codingwell_scala-guice` = "net.codingwell" %% "scala-guice" % "4.0.1"
+val `org.scalatestplus_play` = "org.scalatestplus.play" %% "scalatestplus-play" % "3.1.2"
 
-val `com.typesafe.play_play-json` = "com.typesafe.play" %% "play-json" % readPlayVersion
+val `net.codingwell_scala-guice` = "net.codingwell" %% "scala-guice" % "4.2.1"
+
+val `com.typesafe.play_play-json` = "com.typesafe.play" %% "play-json" % "2.6.10"
+
+val `io.circe_circe-java8` = "io.circe" %% "circe-java8" % circeVersion
+
+val `play-circe_play-circe` = "com.dripower" %% "play-circe" % "2609.0"
+
 
 lazy val services = projectName("services", file("domain/services")).settings(
   libraryDependencies ++= Seq(
-    `org.scalatest_scalatest`,
-    `org.scalacheck_scalacheck`,
     `com.typesafe.scala-logging_scala-logging`,
     `ch.qos.logback_logback-classic`,
     `com.typesafe.play_play-json`
@@ -71,27 +69,30 @@ lazy val storage = projectName("storage", file("infrastructure/storage")).settin
 
 lazy val view = projectName("view", file("presentation/view")).settings(
   libraryDependencies ++= Seq(
-    cache,
+    cacheApi,
     filters,
-    `org.scalatestplus_play`
+    guice,
+    `io.circe_circe-java8`,
+    `play-circe_play-circe`,
+    `org.scalatestplus_play` % Test
   ),
-  packAutoSettings,
   packMain := Map("view" -> "play.core.server.ProdServerStart"),
   Revolver.settings,
   mainClass in reStart := Option("play.core.server.ProdServerStart")
 ).dependsOn(storage).enablePlugins(SbtWeb)
   .enablePlugins(PlayScala)
   .disablePlugins(PlayLayoutPlugin)
+  .enablePlugins(PackPlugin)
 
 
 def projectName(name: String, file: File): Project = Project(name, file).settings(
-  SbtScalariform.scalariformSettings,
+  libraryDependencies ++= Seq(
+    `org.scalatest_scalatest`  % Test,
+    `org.scalacheck_scalacheck`  % Test),
   publishArtifact in(Compile, packageDoc) := false,
   sources in(Compile, doc) := Seq.empty,
-  scalariformSettings,
-  scapegoatVersion := "1.1.1",
-  scapegoatIgnoredFiles := Seq(".*/target/.*"),
-  ScalariformKeys.preferences := ScalariformKeys.preferences.value.
-    setPreference(AlignSingleLineCaseStatements, true).
-    setPreference(SpacesAroundMultiImports, false)
+  scalariformPreferences := scalariformPreferences.value
+    .setPreference(AlignSingleLineCaseStatements, true)
+    .setPreference(DoubleIndentConstructorArguments, true)
+    .setPreference(DanglingCloseParenthesis, Preserve)
 )

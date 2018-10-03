@@ -5,7 +5,7 @@ import pl.jozwik.demo.domain.PostRepository
 import pl.jozwik.demo.storage.MemoryPostRepository
 
 class StorageModule extends ScalaModule {
-  def configure(): Unit = {
+  override def configure(): Unit = {
     bind[PostRepository].to[MemoryPostRepository]
   }
 }

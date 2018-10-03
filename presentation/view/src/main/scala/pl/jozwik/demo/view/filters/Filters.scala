@@ -1,15 +1,16 @@
 package pl.jozwik.demo.view.filters
 
-import javax.inject.Inject
-
+import akka.stream.Materializer
+import javax.inject.{ Inject, Singleton }
+import play.api.Environment
 import play.api.http.HttpFilters
-import play.api.mvc.{Result, RequestHeader, Filter}
-import play.filters.gzip.GzipFilter
-import play.api.libs.concurrent.Execution.Implicits.defaultContext
-import scala.concurrent.Future
+import play.api.mvc.{ Filter, RequestHeader, Result }
 
-class AccessLogFilter extends Filter {
-  def apply(nextFilter: (RequestHeader) => Future[Result])(rh: RequestHeader): Future[Result] = {
+import scala.concurrent.{ ExecutionContext, Future }
+
+@Singleton
+class AccessLogFilter @Inject() (implicit val mat: Materializer, ex: ExecutionContext) extends Filter {
+  def apply(nextFilter: RequestHeader => Future[Result])(rh: RequestHeader): Future[Result] = {
     val start = System.currentTimeMillis
     nextFilter(rh).map {
       result =>
@@ -19,6 +20,11 @@ class AccessLogFilter extends Filter {
   }
 }
 
-class Filters @Inject() (gzip: GzipFilter, log: AccessLogFilter) extends HttpFilters {
-  val filters = Seq(gzip, log)
+class Filters @Inject() (
+    logging: AccessLogFilter,
+    environment: Environment) extends HttpFilters {
+  val filters: Seq[Filter] = environment.mode match {
+    case _ =>
+      Seq(logging)
+  }
 }

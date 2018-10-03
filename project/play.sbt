@@ -1,6 +1,6 @@
 resolvers += "Typesafe repository" at "http://repo.typesafe.com/typesafe/releases/"
 
-val playVersion = "2.4.6"
+val playVersion = "2.6.19"
 
 addSbtPlugin("com.typesafe.play" % "sbt-plugin" % playVersion)
 
