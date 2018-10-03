@@ -31,7 +31,7 @@ val readPlayVersion = {
   versionString.replace("\"", "")
 }
 
-val circeVersion = "0.9.0"
+val circeVersion = "0.10.0"
 
 val `org.scalatest_scalatest` = "org.scalatest" %% "scalatest" % "3.0.5"
 
@@ -49,7 +49,7 @@ val `com.typesafe.play_play-json` = "com.typesafe.play" %% "play-json" % "2.6.10
 
 val `io.circe_circe-java8` = "io.circe" %% "circe-java8" % circeVersion
 
-val `play-circe_play-circe` = "com.dripower" %% "play-circe" % "2609.0"
+val `play-circe_play-circe` = "com.dripower" %% "play-circe" % "2610.0"
 
 
 lazy val services = projectName("services", file("domain/services")).settings(
