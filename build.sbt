@@ -1,13 +1,19 @@
 import com.sksamuel.scapegoat.sbt.ScapegoatSbtPlugin.autoImport._
 import scalariform.formatter.preferences._
 
-scalaVersion in ThisBuild := "2.12.7"
+val `scala_2.13` = "2.13.0"
+
+val `scala_2.12` = "2.12.8"
+
+crossScalaVersions := Seq(`scala_2.13`, `scala_2.12`)
+
+scalaVersion in ThisBuild := `scala_2.12`
 
 organization in ThisBuild := "pl.jozwik.demo"
 
 name := "sbt-simple-multiProject"
 
-scapegoatVersion in ThisBuild := "1.3.8"
+scapegoatVersion in ThisBuild := "1.3.9"
 
 scalacOptions in ThisBuild ++= Seq(
   "-target:jvm-1.8",
@@ -26,30 +32,30 @@ scalacOptions in ThisBuild ++= Seq(
 
 val readPlayVersion = {
   val lineIterator = scala.io.Source.fromFile(new java.io.File("project", "play.sbt")).getLines()
-  val line = lineIterator.find(line => line.contains("playVersion")).getOrElse( """val playVersion = "2.6.19" """)
+  val line = lineIterator.find(line => line.contains("playVersion")).getOrElse( """val playVersion = "2.7.3" """)
   val versionString = line.split("=")(1).trim
   versionString.replace("\"", "")
 }
 
-val circeVersion = "0.10.0"
+val circeVersion = "0.11.1"
 
-val `org.scalatest_scalatest` = "org.scalatest" %% "scalatest" % "3.0.5"
+val `org.scalatest_scalatest` = "org.scalatest" %% "scalatest" % "3.0.8"
 
 val `org.scalacheck_scalacheck` = "org.scalacheck" %% "scalacheck" % "1.14.0"
 
-val `com.typesafe.scala-logging_scala-logging` = "com.typesafe.scala-logging" %% "scala-logging" % "3.9.0"
+val `com.typesafe.scala-logging_scala-logging` = "com.typesafe.scala-logging" %% "scala-logging" % "3.9.2"
 
 val `ch.qos.logback_logback-classic` = "ch.qos.logback" % "logback-classic" % "1.2.3"
 
-val `org.scalatestplus_play` = "org.scalatestplus.play" %% "scalatestplus-play" % "3.1.2"
+val `org.scalatestplus_play` = "org.scalatestplus.play" %% "scalatestplus-play" % "4.0.3"
 
-val `net.codingwell_scala-guice` = "net.codingwell" %% "scala-guice" % "4.2.1"
+val `net.codingwell_scala-guice` = "net.codingwell" %% "scala-guice" % "4.2.5"
 
-val `com.typesafe.play_play-json` = "com.typesafe.play" %% "play-json" % "2.6.10"
+val `com.typesafe.play_play-json` = "com.typesafe.play" %% "play-json" % "2.7.4"
 
 val `io.circe_circe-java8` = "io.circe" %% "circe-java8" % circeVersion
 
-val `play-circe_play-circe` = "com.dripower" %% "play-circe" % "2610.0"
+val `play-circe_play-circe` = "com.dripower" %% "play-circe" % "2711.0"
 
 
 lazy val services = projectName("services", file("domain/services")).settings(
