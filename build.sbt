@@ -32,7 +32,7 @@ scalacOptions in ThisBuild ++= Seq(
 
 val readPlayVersion = {
   val lineIterator = scala.io.Source.fromFile(new java.io.File("project", "play.sbt")).getLines()
-  val line = lineIterator.find(line => line.contains("playVersion")).getOrElse( """val playVersion = "2.7.3" """)
+  val line = lineIterator.find(line => line.contains("playVersion")).getOrElse("""val playVersion = "2.7.3" """)
   val versionString = line.split("=")(1).trim
   versionString.replace("\"", "")
 }
@@ -53,16 +53,22 @@ val `net.codingwell_scala-guice` = "net.codingwell" %% "scala-guice" % "4.2.5"
 
 val `com.typesafe.play_play-json` = "com.typesafe.play" %% "play-json" % "2.7.4"
 
-val `io.circe_circe-java8` = "io.circe" %% "circe-java8" % circeVersion
+val `io.circe_circe-refined` = "io.circe" %% "circe-refined" % circeVersion
+
+val `io.circe_circe-parser` = "io.circe" %% "circe-parser" % circeVersion
+
+val `io.circe_circe-generic` = "io.circe" %% "circe-generic" % circeVersion
 
 val `play-circe_play-circe` = "com.dripower" %% "play-circe" % "2711.0"
+
+val `org.scalamacros_paradise` = "org.scalamacros" % "paradise" % "2.1.1" cross CrossVersion.full
 
 
 lazy val services = projectName("services", file("domain/services")).settings(
   libraryDependencies ++= Seq(
     `com.typesafe.scala-logging_scala-logging`,
     `ch.qos.logback_logback-classic`,
-    `com.typesafe.play_play-json`
+    `io.circe_circe-generic`
   )
 )
 
@@ -78,8 +84,9 @@ lazy val view = projectName("view", file("presentation/view")).settings(
     cacheApi,
     filters,
     guice,
-    `io.circe_circe-java8`,
+    `io.circe_circe-refined`,
     `play-circe_play-circe`,
+    `io.circe_circe-parser`,
     `org.scalatestplus_play` % Test
   ),
   packMain := Map("view" -> "play.core.server.ProdServerStart"),
@@ -93,12 +100,13 @@ lazy val view = projectName("view", file("presentation/view")).settings(
 
 def projectName(name: String, file: File): Project = Project(name, file).settings(
   libraryDependencies ++= Seq(
-    `org.scalatest_scalatest`  % Test,
-    `org.scalacheck_scalacheck`  % Test),
+    `org.scalatest_scalatest` % Test,
+    `org.scalacheck_scalacheck` % Test),
   publishArtifact in(Compile, packageDoc) := false,
   sources in(Compile, doc) := Seq.empty,
   scalariformPreferences := scalariformPreferences.value
     .setPreference(AlignSingleLineCaseStatements, true)
     .setPreference(DoubleIndentConstructorArguments, true)
-    .setPreference(DanglingCloseParenthesis, Preserve)
+    .setPreference(DanglingCloseParenthesis, Preserve),
+  addCompilerPlugin(`org.scalamacros_paradise` cross CrossVersion.full)
 )

@@ -1,6 +1,5 @@
 package pl.jozwik.demo.view.controller
 
-import io.circe.generic.auto._
 import javax.inject.{ Inject, Singleton }
 import pl.jozwik.demo.domain.{ Post, PostRepository }
 import play.api.mvc.{ ControllerComponents, EssentialAction }
